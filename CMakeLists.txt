@@ -1,0 +1,8 @@
+cmake_minimum_required(VERSION 3.16)
+project(mini-kv CXX)
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+add_library(kvcore src/db.cpp)
+target_include_directories(kvcore PUBLIC include)
+add_executable(mini_kv main.cpp)
+target_link_libraries(mini_kv PRIVATE kvcore)
