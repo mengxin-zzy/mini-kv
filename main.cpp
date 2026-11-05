@@ -2,6 +2,8 @@
 #include "db.h"
 int main(){
 	KV db;
+	db.Load();
+	std:: cout << "load size =" << db.Size() << std::endl;
 	db.Put("name", "alice");
 	std::cout << "1." << db.Get("name").value() << "\n";
 	db.Put("name", "bob");
