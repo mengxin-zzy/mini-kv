@@ -1,0 +1,17 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "调试 mini_kv",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/mini_kv",
+      "args": [],
+      "cwd": "${workspaceFolder}",
+      "stopAtEntry": false,
+      "MIMode": "gdb",
+      "miDebuggerPath": "/usr/bin/gdb",
+      "preLaunchTask": "build"
+    }
+  ]
+}

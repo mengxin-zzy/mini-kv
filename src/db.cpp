@@ -7,8 +7,9 @@ static bool read_u32(std::ifstream& in, uint32_t& v){
 static void write_u32(std::string &buf, uint32_t v){
 	buf.append(reinterpret_cast<const char*>(&v), 4);
 }
-bool KV::Put(std::string key, std::string val){
-	if (key.empty())return false;
+
+bool KV::AppendRecord(char type, const std::string& key, const std::string& val)
+{
 	if (!log_.is_open()){
 		log_.open("data.log", std::ios::binary | std::ios::app);
 		if(!log_.is_open())return false;//防止open打开失败情况，导致数据丢失
@@ -17,12 +18,17 @@ bool KV::Put(std::string key, std::string val){
 	write_u32(buf, 0);
 	write_u32(buf, (uint32_t)key.size());
 	write_u32(buf, (uint32_t)val.size());
-	buf.push_back(1);
+	buf.push_back(type);
 	buf.append(key.data(), key.size());
 	buf.append(val.data(), val.size());
 	log_.write(buf.data(), (std::streamsize)buf.size());
 	log_.flush();
-	table[std::string(key)] = std::string(val);
+	return log_.good();
+}
+bool KV::Put(std::string key, std::string val){
+	if (key.empty())return false;
+	if (!AppendRecord(1, key, val))return false;
+	table[key] = val;
 	return true;
 }
 std::optional<std::string> KV::Get(std::string key){
@@ -31,6 +37,7 @@ std::optional<std::string> KV::Get(std::string key){
 	return it->second;
 }
 bool KV::Delete(std::string key){
+	if (!AppendRecord(2, key, "")) return false;
 	return table.erase(key) > 0;
 }
 bool KV::Load(){
