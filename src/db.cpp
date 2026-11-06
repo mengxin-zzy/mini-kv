@@ -3,6 +3,8 @@
 #include <fstream>
 #include <zlib.h>
 #include <filesystem>
+#include <fcntl.h>
+#include <unistd.h>
 
 static bool read_u32(std::ifstream& in, uint32_t& v){
 	return static_cast<bool>(in.read(reinterpret_cast<char*>(&v), 4));
@@ -12,12 +14,26 @@ static void write_u32(std::string &buf, uint32_t v){
 	buf.append(reinterpret_cast<const char*>(&v), 4);
 }
 
+KV::KV():KV(Options{}){}
+
+KV::KV(Options opt) : opt_(opt){
+	fd_ = ::open("data.log", O_CREAT | O_WRONLY | O_APPEND, 0644);
+}
+KV::~KV(){
+	if (fd_ >= 0){
+		::close(fd_);
+		fd_ = -1;
+	}
+}
+
 bool KV::AppendRecord(char type, const std::string& key, const std::string& val)
 {
-	if (!log_.is_open()){
-		log_.open("data.log", std::ios::binary | std::ios::app);
-		if(!log_.is_open())return false;//防止open打开失败情况，导致数据丢失
-	}
+	// if (!log_.is_open()){
+	// 	log_.open("data.log", std::ios::binary | std::ios::app);
+	// 	if(!log_.is_open())return false;//防止open打开失败情况，导致数据丢失
+	// }
+	if (fd_ < 0)return false;
+
 
 	std::string body;
 	write_u32(body, (uint32_t)key.size());
@@ -28,13 +44,28 @@ bool KV::AppendRecord(char type, const std::string& key, const std::string& val)
 
 	uLong crc = crc32(0L, Z_NULL, 0);
 	crc = crc32(crc, reinterpret_cast<const Bytef*> (body.data()),(uInt)body.size());
+
+
 	std::string buf;
 	write_u32(buf, (uint32_t)crc);
 	buf.append(body);
-	log_.write(buf.data(), (std::streamsize)buf.size());
-	log_.flush();
-	return log_.good();
+
+
+	// log_.write(buf.data(), (std::streamsize)buf.size());
+	// log_.flush();
+	// return log_.good();
+
+	ssize_t n = ::write(fd_, buf.data(), buf.size());
+	if (n != (ssize_t)buf.size()) return false;
+	
+	if (opt_.sync_on_write){
+		if (::fsync(fd_) != 0)return false;
+	}
+	return true;
+	
 }
+
+
 
 bool KV::Put(std::string key, std::string val){
 	if (key.empty())return false;

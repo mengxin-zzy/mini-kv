@@ -1,18 +1,34 @@
 #include<iostream>
 #include "db.h"
+#include<chrono>
+
 int main(int argc, char** argv){
-	KV db;
+	KV::Options opt;
+	if (argc > 2 && std::string(argv[2]) == "sync")opt.sync_on_write = true;
+	KV db(opt);
 	db.Load();
 
-	if (argc > 1 && std::string(argv[1]) == "stress"){
-		for(int i = 0; i < 10000000; i++){
+	if (argc > 1 && std::string(argv[1]) == "bench"){
+		auto t0 = std::chrono::steady_clock::now();
+		for(int i = 0; i < 10000; i++){
 			db.Put("k" + std::to_string(i), "val" + std::to_string(i));
 		}
-		std::cout << "done\n";
+		auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - t0).count();
+		std:: cout << "10000 puts:" << ms << "ms\n";
 		return 0;
 	}
 
-	std:: cout << "load size =" << db.Size() << std::endl;
+
+
+
+	// if (argc > 1 && std::string(argv[1]) == "stress"){
+	// 	for(int i = 0; i < 10000000; i++){
+	// 		db.Put("k" + std::to_string(i), "val" + std::to_string(i));
+	// 	}
+	// 	std::cout << "done\n";
+	// 	return 0;
+	// }
+	// std:: cout << "load size =" << db.Size() << std::endl;
 
 	// db.Put("a", "1");
     // db.Put("b", "2");
