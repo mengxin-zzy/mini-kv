@@ -19,3 +19,6 @@ add_executable(test_skiplist tests/test_skiplist.cpp)
 target_link_libraries(test_skiplist PRIVATE kvcore GTest::gtest_main)
 target_include_directories(test_skiplist PRIVATE include)
 add_test(NAME skiplist COMMAND test_skiplist)
+
+add_executable(bench_containers bench/bench_containers.cpp)
+target_link_libraries(bench_containers PRIVATE kvcore)
