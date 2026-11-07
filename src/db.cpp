@@ -6,6 +6,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 
+
 static bool read_u32(std::ifstream& in, uint32_t& v){
 	return static_cast<bool>(in.read(reinterpret_cast<char*>(&v), 4));
 }
@@ -19,6 +20,7 @@ KV::KV():KV(Options{}){}
 KV::KV(Options opt) : opt_(opt){
 	fd_ = ::open("data.log", O_CREAT | O_WRONLY | O_APPEND, 0644);
 }
+
 KV::~KV(){
 	if (fd_ >= 0){
 		::close(fd_);
@@ -65,24 +67,25 @@ bool KV::AppendRecord(char type, const std::string& key, const std::string& val)
 	
 }
 
-
-
 bool KV::Put(std::string key, std::string val){
 	if (key.empty())return false;
 	if (!AppendRecord(1, key, val))return false;
-	table[key] = val;
+	// table[key] = val;
+	list_.Insert(key, val);
 	return true;
 }
 
 std::optional<std::string> KV::Get(std::string key){
-	auto it = table.find(key);
-	if (it == table.end())return std::nullopt;
-	return it->second;
+	// auto it = table.find(key);
+	// if (it == table.end())return std::nullopt;
+	// return it->second;
+	return list_.Find(key);
 }
 
 bool KV::Delete(std::string key){
-	if (!AppendRecord(2, key, "")) return false;
-	return table.erase(key) > 0;
+	// if (!AppendRecord(2, key, "")) return false;
+	// return table.erase(key) > 0;
+	return list_.Erase(key);
 }
 
 bool KV::Load(){
@@ -115,8 +118,12 @@ bool KV::Load(){
 
 	if ((uint32_t)actual != crc)break;
 
-	if (type == 1) table[k] = v;
-	else if (type == 2) table.erase(k);
+	// if (type == 1) table[k] = v;
+	// else if (type == 2) table.erase(k);
+
+	if (type == 1)list_.Insert(k, v);
+	else if (type == 2)list_.Erase(k);
+
 
 	good_end = in.tellg();
     }

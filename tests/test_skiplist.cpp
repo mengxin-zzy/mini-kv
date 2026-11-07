@@ -46,3 +46,17 @@ TEST(SkipList, ManyKeys) {
         EXPECT_EQ(s.Find("k" + std::to_string(i)), std::optional<std::string>(std::to_string(i)));
     EXPECT_EQ(s.Find("k1000"), std::nullopt);
 }
+
+TEST(SkipList, Scan) {
+    SkipList s;
+    for (auto k : {"a", "b", "c", "d", "e"})
+        s.Insert(k, std::string(k) + "1");
+
+    auto r = s.Scan("b", "d");
+    ASSERT_EQ(r.size(), 2u);
+    EXPECT_EQ(r[0].first, "b");
+    EXPECT_EQ(r[1].first, "c");
+
+    EXPECT_TRUE(s.Scan("x", "z").empty());      // 区间外
+    EXPECT_EQ(s.Scan("", "c").size(), 2u);      // 从最前面开始，含 a、b
+}

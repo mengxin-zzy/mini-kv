@@ -11,9 +11,11 @@ public:
     SkipList();
     ~SkipList();
 
-    bool Insert(const std::string& key, const std::string& val);
+    
     std::optional<std::string> Find(const std::string& key) const;
+    bool Insert(const std::string& key, const std::string& val);
     bool Erase(const std::string &key);
+    std::vector<std::pair<std::string, std::string>> Scan(const std::string& begin, const std::string& end) const;
     size_t Size() const {return size_;}
     
 
@@ -29,7 +31,7 @@ private:
 
     int RandomLevel();
     Node* FindGreaterOrEqual(const std::string& key, std::vector<Node*>& prev)const;
-    
+
     static constexpr int kMaxLevel = 12;
     int level_ = 1;
     size_t size_ = 0;

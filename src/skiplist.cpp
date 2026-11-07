@@ -77,5 +77,15 @@ bool SkipList::Erase(const std::string& key){
     while(level_ > 1 && head_->next[level_ - 1] == nullptr) level_--;
     size_--;
     return true;
-    
+}
+
+std::vector<std::pair<std::string, std::string>> SkipList::Scan(const std::string& begin, const std::string& end)const{
+    std::vector<std::pair<std::string, std::string>> result;
+    std::vector<Node*> prev(kMaxLevel, nullptr);
+    Node* found = FindGreaterOrEqual(begin, prev);
+    while(found != nullptr && found->key < end){
+        result.push_back({found->key, found->val});
+        found = found->next[0];
+    }
+    return result;
 }
