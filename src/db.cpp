@@ -138,16 +138,7 @@ bool KV::Load(){
 	return true;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
+std::vector<std::pair<std::string, std::string>> KV::Scan(const std::string& begin, const std::string& end) const {
+    return list_.Scan(begin, end);
+}
 

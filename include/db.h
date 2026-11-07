@@ -29,6 +29,8 @@ public:
 
 	bool Delete(std::string key);
 
+	std::vector<std::pair<std::string, std::string>> Scan(const std::string& begin, const std::string& end) const;
+
 
 
 private:
