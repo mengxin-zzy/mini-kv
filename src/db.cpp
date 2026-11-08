@@ -44,7 +44,7 @@ bool KV::AppendRecord(char type, const std::string& key, const std::string& val)
 	body.append(key.data(), key.size());
 	body.append(val.data(), val.size());
 
-	uLong crc = crc32(0L, Z_NULL, 0);
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																		uLong crc = crc32(0L, Z_NULL, 0);
 	crc = crc32(crc, reinterpret_cast<const Bytef*> (body.data()),(uInt)body.size());
 
 
@@ -114,8 +114,9 @@ bool KV::Load(){
 	body.append(v);
 
 	uLong actual = crc32(0L, Z_NULL, 0);
+	//重新计算一遍记入数据里的key和val的crc值
 	actual = crc32(actual, reinterpret_cast<const Bytef*>(body.data()), (uInt)body.size());
-
+	//看看存入的key和val是否有错误，跟存入前是否相同
 	if ((uint32_t)actual != crc)break;
 
 	// if (type == 1) table[k] = v;

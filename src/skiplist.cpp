@@ -1,15 +1,19 @@
 #include "skiplist.h"
 
-SkipList::SkipList():head_(new Node("", "", kMaxLevel)){}
+SkipList::SkipList(){
+    head_ = new (pool_.Alloc())Node("","",kMaxLevel);
+}
 
 SkipList::~SkipList(){
     Node* cur = head_->next[0];
     while(cur != nullptr){
         Node* next = cur->next[0];
-        delete cur;
+        cur->~Node();
+        pool_.Free(cur);
         cur = next;
     }
-    delete head_;
+    head_->~Node();
+    pool_.Free(head_);
 }
 
 int SkipList::RandomLevel(){
@@ -55,7 +59,7 @@ bool SkipList::Insert(const std::string& key, const std::string& val) {
         level_ = lv;
     }
 
-    Node* node = new Node(key, val, lv);
+    Node* node = new (pool_.Alloc()) Node(key, val, lv);
     for(int i = 0; i < lv; i++){                    //不可能出现高层有而低层没有的情况
         node->next[i] = prev[i]->next[i];
         prev[i]->next[i] = node;
@@ -72,7 +76,8 @@ bool SkipList::Erase(const std::string& key){
     for(int i = 0; i < (int)found->next.size(); i++){
         if (prev[i]->next[i] == found) prev[i]->next[i] = found->next[i];
     }
-    delete found;
+    found->~Node();
+    pool_.Free(found);
 
     while(level_ > 1 && head_->next[level_ - 1] == nullptr) level_--;
     size_--;

@@ -14,7 +14,7 @@ public:
 	KV();
 	explicit KV(Options opt);
 	~KV();
-
+	
 	KV(const KV&) = delete;//禁止拷贝
 	KV& operator = (const KV&) = delete;//禁止赋值给另一个对象
 

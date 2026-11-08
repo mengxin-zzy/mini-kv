@@ -5,6 +5,8 @@
 #include <random>
 #include <utility>
 #include <cstddef>
+#include <new>
+#include "pool.h"
 
 class SkipList{
 public:
@@ -36,5 +38,6 @@ private:
     int level_ = 1;
     size_t size_ = 0;
     Node* head_;
+    Nodepool pool_{sizeof(Node)};
     std::mt19937 rng_{std::random_device{}()};
 };
