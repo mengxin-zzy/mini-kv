@@ -73,7 +73,7 @@ bool SkipList::Erase(const std::string& key){
     Node* found = FindGreaterOrEqual(key, prev);
     if (found == nullptr || found->key != key)return false;
 
-    for(int i = 0; i < (int)found->next.size(); i++){
+    for(int i = 0; i < level_; i++){
         if (prev[i]->next[i] == found) prev[i]->next[i] = found->next[i];
     }
     found->~Node();
