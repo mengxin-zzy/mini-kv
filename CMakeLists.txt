@@ -22,3 +22,5 @@ add_test(NAME skiplist COMMAND test_skiplist)
 
 add_executable(bench_containers bench/bench_containers.cpp)
 target_link_libraries(bench_containers PRIVATE kvcore)
+
+add_executable(echo_server bench/echo_server.cpp)
