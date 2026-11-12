@@ -24,3 +24,4 @@ add_executable(bench_containers bench/bench_containers.cpp)
 target_link_libraries(bench_containers PRIVATE kvcore)
 
 add_executable(echo_server bench/echo_server.cpp)
+add_executable(epoll_server bench/epoll_server.cpp)
